@@ -1,0 +1,278 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>数据管理</title>
+    <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+
+    <link rel="stylesheet" type="text/css" href="css/bootstrap-responsive.css">
+    <script>
+        var _data = [], info_body, numReg = /^\d+$/;
+
+        String.prototype.trim = function () {
+            return this.replace(/(^\s*)|(\s*$)/g, "");
+        }
+
+        function $(id) {
+            return document.getElementById(id);
+        }
+
+        function getFishById(id) {
+            for (var i = 0; i < _data.length; i++) {
+                if (_data[i].id == id) {
+                    return _data[i];
+                }
+            }
+            return null;
+        }
+    
+        function Fish(name, clas, sjfb, dlfb, qxhj, xttz, picture) {
+            this.id = new Date().getTime();
+            this.name = name ? name : null;
+            this.clas = clas ? clas : 0;
+            this.sjfb = sjfb ? sjfb : '0';
+            this.dlfb = dlfb ? dlfb : 0;
+            this.qxhj = qxhj ? qxhj : 0;
+            this.xttz = xttz ? xttz : 0;
+            this.picture = picture ? picture : 0;
+        }
+        //定义鱼类对象
+        
+        function addHandler() {
+            var yu = new Fish();
+            yu.name = $('nName').value.trim();
+            yu.clas = $('nClas').value.trim();
+            yu.sjfb = $('nSjfb').value.trim();
+            yu.dlfb = $('nDlfb').value.trim();
+            yu.qxhj = $('nQxhj').value.trim();
+            yu.xttz = $('nXttz').value.trim();
+            yu.picture = $('nPicture').value.trim();
+            if (valid(yu)) {
+                _data.push(yu);
+                $('resetButton').click();
+            }
+            showData(_data);
+        }
+        //鱼类信息的增加方法
+        
+        function valid(fish) {
+            if (fish.name == '') {
+                alert('名字不能为空！');
+                return false;
+            }
+            if (fish.clas == '') {
+                alert('科目不能为空！');
+                return false;
+            }
+            
+            return true;
+        }
+        //验证输入是否正确
+        
+        function delHandler(id) {
+            if (confirm('真的要删除吗？')) {
+                var temp = [];
+                for (var i = 0; i < _data.length; i++) {
+                    if (_data[i].id != id) {
+                        temp.push(_data[i]);
+                    }
+                }
+                _data = temp;
+                showData(_data);
+            }
+        }
+        //鱼类信息的删除方法
+        
+        function search(name, clas) {
+            var temp = [];
+            for (var i = 0; i < _data.length; i++) {
+                if ("" != name) {
+                    if (_data[i].name != name) {
+                        continue;
+                    }
+                }
+                if ("" != clas) {
+                    if (_data[i].clas != clas) {
+                        continue;
+                    }
+                }
+              
+                temp.push(_data[i]);
+            }
+            showData(temp);
+        }
+        //查询方法
+        
+        function showData(data) {
+            info_body = info_body || $('info-body');
+            var html = [];
+            for (var i = 0; i < data.length; i++) {
+                html.push('<tr>');
+                html.push('<td>' + data[i].name + '</td>');
+                html.push('<td>' + data[i].clas + '</td>');
+                html.push('<td>' + data[i].sjfb + '</td>');
+                html.push('<td>' + data[i].dlfb + '</td>');
+                html.push('<td>' + data[i].qxhj + '</td>');
+                html.push('<td>' + data[i].xttz + '</td>');
+                html.push('<td>' + data[i].picture + '</td>');
+                html.push('<td><button class="btn" style="margin-right:10px;" onclick="editHandler(this,\'' + data[i].id + '\')">编辑</button><button class="btn btn-danger" style="margin-right:10px;" onclick="delHandler(\'' + data[i].id + '\')">删除</button></td>');
+                html.push('</tr>');
+            }
+            info_body.innerHTML = html.join("");
+        }
+        //用html显示数据内容
+        
+        function saveEidted(id) {
+            var yu = new Fish();
+            yu.name = $('eName').value;
+            yu.clas = $('eClas').value;
+            yu.sjfb = $('eSjfb').value;
+            yu.dlfb = $('eDlfb').value;
+            yu.qxhj = $('eQxhj').value;
+            yu.xttz = $('eXttz').value;
+            yu.picture = $('ePicture').value;
+            if (valid(yu)) {
+                for (var i = 0; i < _data.length; i++) {
+                    if (_data[i].id == id) {
+                        _data[i] = yu;
+                        showData(_data);
+                        break;
+                    }
+                }
+            }
+        }
+        //保存修改内容
+        
+        function editHandler(obj, id) {
+            var pp = obj.parentNode.parentNode;
+            var tds = pp.getElementsByTagName('td');
+            var temp = getFishById(id);
+            if (null != temp) {
+                for (var i = 0; i < tds.length; i++) {
+                    if (0 == i) {
+                        tds[i].innerHTML = '<input id="eName" style="width:80px" type="text" value="' + temp.name + '">';
+                    }
+                    if (1 == i) {
+                        tds[i].innerHTML = '<input id="eClas" style="width:80px" type="text" value="' + temp.clas + '">';
+                    }
+                    if (2 == i) {
+                        tds[i].innerHTML = '<input id="eSjfb" type="text" style="width:70px" value="' + temp.sjfb + '">';
+                    }
+                    if (3 == i) {
+                        tds[i].innerHTML = '<input id="eDlfb" type="text" style="width:70px"  value="' + temp.dlfb + '">';
+                    }
+                    if (4 == i) {
+                        tds[i].innerHTML = '<input id="eQxhj" type="text" style="width:70px"  value="' + temp.qxhj + '">';
+                    }
+                    if (5 == i) {
+                        tds[i].innerHTML = '<input id="eXttz" type="text" style="width:70px"  value="' + temp.xttz + '">';
+                    }
+                    if (6 == i) {
+                        tds[i].innerHTML = '<input id="ePicture" type="text" style="width:70px"  value="' + temp.picture + '">';
+                    }
+                    if (7 == i) {
+                        tds[i].innerHTML = '<button class="btn" onclick="saveEidted(\'' + id + '\')">保存</button> <button class="btn" onclick="showData(_data)">取消</button>';
+                    }
+                }
+            } else {
+                alert('error!');
+            }
+        }
+        //编辑数据
+    </script>
+    <style type="text/css">
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        .stitle {
+            padding-left: 20px;
+            text-align: right;
+        }
+
+        .sinput {
+            width: 100px;
+            border: 1px #eee solid;
+            margin-top: 0px;
+        }
+
+        .sslect {
+            width: 60px;
+            margin-top: 10px;
+        }
+
+        .ninput {
+            position: relative;
+            float: left;
+            left: -5px;
+            width: 100%;
+            border: 1px solid #eee;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div style="position:fixed;width:100%;background:#eee;z-index:9998;height:50px;overflow:hidden;">
+        <table>
+            <tr>
+                <td class="stitle">中文名:</td>
+                <td><input type="text" class="sinput" id="sName" /></td>
+                <td class="stitle" style="width:50px;">科目:</td>
+                <td><input type="text" class="sinput" id="sClas" /></td>
+               
+                
+                <td>&nbsp;<input type="button" class="btn" value="查询" onclick="search($('sName').value.trim(),$('sClas').value.trim())" /></td>
+            </tr>
+        </table>
+
+        <form>
+            <table class="table" id="add-info">
+                <tr>
+                    <td width="100"><input class="ninput" type="text" id="nName" /></td>
+                    <td width="100"><input class="ninput" type="text" id="nClas" /></td>
+                    <td width="100"><input class="ninput" type="text" id="nSjfb" /></td>
+                    <td width="100"><input class="ninput" type="text" id="nDlfb" /></td>
+                    <td width="100"><input class="ninput" type="text" id="nQxhj" /></td>
+                    <td width="100"><input class="ninput" type="text" id="nXttz" /></td>
+                    <td width="100"><input class="ninput" type="text" id="nPicture" /></td>
+                    <td>
+                        <input type="button" class="btn" value="添加" onclick="addHandler()" />
+                        <input type="reset" value="reset" id="resetButton" style="display:none;" />
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+    <div style="position:absolute;z-index:9999;top:10px;bottom:0;height:auto;width:auto;right:30px;overflow:auto;"><a href="{:url('Admin/shutDown')}"><button> 退出登录</button></a></div>
+    <tr style="position:absolute;top:60px;bottom:0;height:auto;width:auto;left:0;right:0;overflow:auto;">
+        <table class="table table-bordered  table-hover" style="position:absolute;top:0px;z-index:2;" id="info-list">
+            <thead>
+                <tr>
+                    <td width="100">中文名</td>
+                    <td width="100">科目</td>
+                    <td width="100">世界分布</td>
+                    <td width="100">地理分布</td>
+                    <td width="100">栖息环境</td>
+                    <td width="100">形态特征</td>
+                    <td width="100">图片地址</td>
+                    <td>操作</td>
+                </tr>
+            </thead>
+            <tbody id="info-body">
+            {volist name="list" id="fish" }
+            <tr>
+                <td style="display: none">{$fish.id}</td>
+                <td>{$fish.name}</td>
+                <td>{$fish.class}</td>
+                <td>{$fish.shijiefenbu}</td>
+                <td>{$fish.dilifenbu}</td>
+                <td>{$fish.qixihuanjing}</td>
+                <td>{$fish.xingtaitezheng}</td>
+                <td>{$fish.picture}</td>
+            </tr>
+            {/volist}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

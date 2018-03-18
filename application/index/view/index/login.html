@@ -1,0 +1,95 @@
+﻿{include file="index/header" /}
+
+    <style>
+        .header a:hover {
+            color: white;
+            text-decoration: underline;
+            background-color: gray;
+        }
+
+        .btn {
+            background-color: orange;
+        }
+
+            .btn:hover {
+                background-color: gold;
+            }
+
+        .header a {
+            display: block;
+            width: 150px;
+            height: 50px;
+        }
+    </style>
+
+    {include file="index/nav" /}
+
+
+                <div style="width:1000px;height:200px;margin:0 auto;"></div>
+                <div style="background-color:white;width:550px;height:250px;margin:0 auto;opacity:0.85;border-radius:10px 10px 10px 10px">
+                    <div style="width:100%;height:100px"></div>
+                    <div style="width:150px;height:40px;float:left"></div>
+                        <table>
+                            <tr align=center>
+                                <td style="font-family:'Microsoft YaHei';font-weight:600;">用户名:</td>
+                                <td><input type="text" name="username" id="username" style="outline:none"></td>
+
+                            </tr>                        
+                            <tr align=center>
+                                <td style="font-family:'Microsoft YaHei';font-weight:600;">密 码:</td>
+                                <td><input type="password" name="password" id="password" style="outline:none"></td></tr>
+                            <tr align=center>
+                                <td colspan="2">
+                                    <input type="button" value="登 录"  style="background-color:orange;outline:none;width:50px;height:30px;border-radius:5px 5px 5px 5px;" onclick="checkLogin();" />
+                                    <input type="button"  value="重 置" style="background-color:orange;outline:none;width:50px;height:30px;border-radius:5px 5px 5px 5px;" onclick="restFrom();"/>
+                                </td>
+                            </tr>
+                        </table>
+                </div>
+<script src="__STATIC__/js/jQuery/jQuery-2.1.4.min.js" type="text/javascript"></script>
+<script>
+    function checkLogin(){
+        var username = $('#username').val();
+        var password = $('#password').val();
+        if( username == '' ){
+            alert('请输入用户名'); //alert('用户名或密码不能为空');
+            return;
+        }else if(password == ""){
+            alert('请输入密码'); //alert('用户名或密码不能为空');
+            return;
+        }
+
+        $.ajax({
+            url:"{:url('index/index/login')}"+'?t='+Math.random(),
+            type:'post',
+            dataType:'json',
+            data:{username:username,password:password},
+            success:function(res){
+                if(res.status==1){
+                    top.location.href = res.url;
+                }else{
+                    alert(res.msg);
+                }
+            },
+            error : function(XMLHttpRequest, textStatus, errorThrown) {
+                alert('网络失败，请刷新页面后重试');
+            }
+        })
+    }
+    //清空表单数据
+    function restFrom(){
+        $('#username').val('') ;
+        $('#password').val('');
+    }
+
+
+    //绑定回车按键
+    document.onkeydown=function(event){
+        e = event ? event :(window.event ? window.event : null);
+        if(e.keyCode==13){
+            checkLogin();
+        }
+    }
+</script>
+
+{include file="index/footer" /}
