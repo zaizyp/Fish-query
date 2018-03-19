@@ -19,5 +19,6 @@ class Admin extends Base{
         session('admin-id',null);
         session(null, 'fq');
         $this->redirect('Index/index','退出');
+
     }
 }
