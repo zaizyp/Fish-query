@@ -1,2 +1,4 @@
 *
 !.gitignore
+/runtime/log
+/runtime/temp
