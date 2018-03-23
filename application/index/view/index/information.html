@@ -3,9 +3,6 @@
 <head>
     <meta charset="utf-8" />
     <title>常见鱼查询与识别系统</title>
-    <link rel="stylesheet" href="../css/demo1.css">
-    <script src="../js/firstjs.js"></script>
-    <script src="../js/vendor/jquery-1.11.1.min.js"></script>
     <style>
         .header a:hover {
             color: white;
@@ -32,7 +29,7 @@
             <div style="background-color:#555555;height:50px;width:1280px;margin:0 auto;">
                 <div style="width:50px;height:50px;float:left;"></div>
                 <div style="height:50px;width:500px;float:left;">
-                    <img src="image/title.png" width="500px" height="50px" />
+                    <img src="__STATIC__/img/title.png" width="500px" height="50px"/>
                 </div>
                 <div style="width:150px;background-color:#555555;height:50px;float:right;text-align:center;line-height:50px;font-family:YouYuan;font-weight:900;font-size:20px;"><a href="login.html" style="color:white;text-decoration:none">管理员登录</a></div>
                 <div style="width:150px;background-color:#555555;height:50px;float:right;text-align:center;line-height:50px;font-family:YouYuan;font-weight:900;font-size:20px;"><a href="introduce.html" style="color:white;text-decoration:none">系统介绍</a></div>
@@ -43,7 +40,7 @@
     </header>
     <main>
         <div style="height:650px;width:100%;">
-            <div style="height:100%;width:1280px;margin:0 auto;background-image:url(image/pic.png)">
+            <div style="height:100%;width:1280px;margin:0 auto;background-image:url(__STATIC__/img/pic.png)">
                 <div style="width:1000px;height:25px;margin:0 auto;"></div>
                 <div style="background-color:white;width:1000px;height:600px;margin:0 auto;opacity:0.85;border-radius:10px 10px 10px 10px">
                     <div style="width:100%;height:50px;float:left"></div>
@@ -51,29 +48,29 @@
                     <table border="1"cellspacing="0" style="height:500px;width:90%;border:1px solid gray;">
                         <tr>
                             <th width="150" height="30">中文名</th>
-                            <th>双斑钝</th>
-                            <th width="50%">图片</th>              
+                            <th>{$fish.name}</th>
+                            <th width="50%">图片</th>
                         </tr>
                         <tr>
                             <th height="30">科目</th>
-                            <th>[鱼翁]科</th>
-                            <th rowspan="4"><img src="picture/双斑钝.jpg"/></th>
+                            <th>{$fish.class}</th>
+                            <th rowspan="4"><img src="__STATIC__/img/{$fish.picture}"/></th>
                         </tr>
                         <tr>
                             <th height="60">世界分布</th>
-                            <th>印度至太平洋</th>
+                            <th>{$fish.shijiefenbu}</th>
                         </tr>
                         <tr>
                             <th height="100">地理分布</th>
-                            <th>分布于印度-太平洋区，自东非洲至土木土群岛，北至台湾，南至澳洲。台湾南部海域有分布。</th>
+                            <th>{$fish.dilifenbu}</th>
                         </tr>
                         <tr>
                             <th height="100">栖息环境</th>
-                            <th>礁区、近海沿岸</th>
+                            <th>{$fish.qixihuanjing}</th>
                         </tr>
                         <tr>
                             <th>形态特征</th>
-                            <th colspan="2">体延长而呈长椭圆形；头背部平直。吻尖，唇略厚。眶前骨后缘不游离。前鳃盖骨后缘具细锯齿；鳃盖骨后缘具2不显之扁棘。腭骨齿存在。体被圆鳞；眼眶间隔被鳞；颊部具鳞4-5列；侧线鳞数40-42；侧线上方鳞列数4个。背鳍单一，硬棘部及软条部间具缺刻，硬棘部之鳍膜末端呈簇须状，硬棘数X，软条数12；臀鳍硬棘数III，软条数6；胸鳍下方鳍条不分枝，而最长之鳍条末端达臀鳍起点之后。体淡褐色，具10条不规则的褐色横斑。鳃盖上缘具一大暗色斑；背鳍后软条部基底的下方亦具一暗色斑。各鳍淡褐色至红褐色。</th>
+                            <th colspan="2">{$fish.xingtaitezheng}</th>
                         </tr>
                      
                     </table>

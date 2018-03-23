@@ -4,34 +4,94 @@
     .btn{background-color:orange;}
     .btn:hover {background-color:gold;}
 </style>
+<script src="__STATIC__/js/jQuery/jQuery-2.1.4.min.js"></script>
 
-{include file="index/nav"  /}
-
+</head>
+<body>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+    }
+</style>
+<header>
+    <div class="header" style="height:50px;width:100%;">
+        <div style="background-color:#555555;height:50px;width:1280px;margin:0 auto;">
+            <div style="width:50px;height:50px;float:left;"></div>
+            <div style="height:50px;width:500px;float:left;">
+                <img src="__STATIC__/img/title.png" width="500px" height="50px"/>
+            </div>
+            <div style="width:150px;background-color:#555555;height:50px;float:right;text-align:center;line-height:50px;font-family:YouYuan;font-weight:900;font-size:20px;">
+                <a href="{:url('index/index/login')}" style="color:white;text-decoration:none">管理员登录</a></div>
+            <div style="width:150px;background-color:#555555;height:50px;float:right;text-align:center;line-height:50px;font-family:YouYuan;font-weight:900;font-size:20px;">
+                <a href="{:url('index/index/introduce')}" style="color:white;text-decoration:none">系统介绍</a></div>
+            <div style="width:150px;background-color:#555555;height:50px;float:right;text-align:center;line-height:50px;font-family:YouYuan;font-weight:900;font-size:20px;">
+                <a href="{:url('index/index/picture')}" style="color:white;text-decoration:none">图片识别查询</a></div>
+            <div style="width:150px;background-color:gray;height:50px;float:right;text-align:center;line-height:50px;font-family:YouYuan;font-weight:900;font-size:20px;">
+                <a href="{:url('index/index/classification')}" style="color:white;text-decoration:none">科目分类查询</a></div>
+        </div>
+    </div>
+</header>
+<main>
+    <div style="height:650px;width:100%;">
+        <div style="height:100%;width:1280px;margin:0 auto;background-image:url(__STATIC__/img/pic.png)">
                 <div style="width:1000px;height:150px;margin:0 auto;"></div>
                 <div style="background-color:white;width:550px;height:350px;margin:0 auto;opacity:0.85;border-radius:10px 10px 10px 10px">
                     <div style="width:100%;height:100px"></div>
                     <div style="width:80px;height:40px;float:left"></div>
                     <div style="width:150px;height:40px;float:left;text-align:center;line-height:40px;font-family:'Microsoft YaHei';font-weight:900">科目名称列表：</div>
-                    <select style="width:200px;height:40px;float:left;font-family:'Microsoft YaHei';font-weight:600;outline:none">
+                    <form action="{:url('index/index/information')}" method="post">
+                        <select id="class" name="class"
+                                style="width:200px;height:40px;float:left;font-family:'Microsoft YaHei';font-weight:600;outline:none">
                         <option value="0">请选择</option>
-                        <option value="科目1">科目1</option>
-                        <option value="科目2">科目2</option>
-                        <option value="科目3">科目3</option>
-                        <option value="科目4">科目4</option>
+                            {volist name="list" id="fish" }
+                            <option value="{$fish}">{$fish}</option>
+                            {/volist}
                     </select>
                     <div style="width:100%;height:30px;float:left"></div>
                     <div style="width:80px;height:40px;float:left"></div>
                     <div style="width:150px;height:40px;float:left;text-align:center;line-height:40px;font-family:'Microsoft YaHei';font-weight:900">鱼类名称列表：</div>
-                    <select style="width:200px;height:40px;float:left;font-family:'Microsoft YaHei';font-weight:600;outline:none">
+                        <select id="name" name="name"
+                                style="width:200px;height:40px;float:left;font-family:'Microsoft YaHei';font-weight:600;outline:none">
                         <option value="0">请选择</option>
-                        <option value="鱼1">鱼1</option>
-                        <option value="鱼2">鱼2</option>
-                        <option value="鱼3">鱼3</option>
-                        <option value="鱼4">鱼4</option>
                     </select>
                     <div style="width:100%;height:50px;float:left"></div>
                     <div style="width:350px;height:50px;float:left"></div>
-                    <button class="btn" type="button" style="float:left;width:80px;height:50px;font-family:SimHei;font-size:20px;font-weight:800;border:none;border-radius:5px 5px 5px 5px;outline:none;">查询</button>
+                        <button class="btn" type="submit"
+                                style="float:left;width:80px;height:50px;font-family:SimHei;font-size:20px;font-weight:800;border:none;border-radius:5px 5px 5px 5px;outline:none;">
+                            查询
+                        </button>
+                    </form>
                 </div>
+            <script>
+
+                $(function () {
+                    //获取对应种类下的鱼名称
+                    $('#class').change(function (e) {
+                        var fish_class = $('#class').val();
+                        if (fish_class == 0) return;
+                        $.ajax({
+                            url: "{:url('index/index/fishclass')}" + '?t=' + Math.random(),
+                            type: 'post',
+                            dataType: 'json',
+                            data: {class: fish_class},
+                            success: function (res) {
+                                var content = '';
+                                $.each(res, function (name, value) {
+                                    content = content + "<option value=" + value.name + ">" + value.name + "</option>";
+                                })
+                                $("#name").html(content);
+                            },
+                            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                                alert('网络失败，请刷新页面后重试');
+                            }
+                        })
+
+
+                    })
+                });
+
+
+            </script>
 
 {include file="index/footer" /}

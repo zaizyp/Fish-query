@@ -2,182 +2,155 @@
 <html>
 <head>
     <title>数据管理</title>
-    <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
-
-    <link rel="stylesheet" type="text/css" href="css/bootstrap-responsive.css">
+    <script src="__STATIC__/js/jQuery/jQuery-2.1.4.min.js"></script>
     <script>
-        var _data = [], info_body, numReg = /^\d+$/;
-
         String.prototype.trim = function () {
             return this.replace(/(^\s*)|(\s*$)/g, "");
         }
 
-        function $(id) {
-            return document.getElementById(id);
+        //鱼类信息的增加方法
+        function addHandler() {
+            var fish = new Object();
+            fish.name = $('#nName').val().trim();
+            fish.class = $('#nClas').val().trim();
+            fish.shijiefenbu = $('#nSjfb').val().trim();
+            fish.dilifenbu = $('#nDlfb').val().trim();
+            fish.qixihuanjing = $('#nQxhj').val().trim();
+            fish.xingtaitezheng = $('#nXttz').val().trim();
+            fish.picture = $('#nPicture').val().trim();
+            if (valid(fish)) {
+                $.ajax({
+                    url: "{:url('index/admin/add')}" + '?t=' + Math.random(),
+                    type: 'post',
+                    dataType: 'json',
+                    data: {fish: JSON.stringify(fish)},
+                    success: function (res) {
+                        if (res.status == 1) {
+                            top.location.href = res.url;
+                        } else {
+                            alert(res.msg);
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        alert('网络失败，请刷新页面后重试');
+                    }
+                })
+            }
         }
 
-        function getFishById(id) {
-            for (var i = 0; i < _data.length; i++) {
-                if (_data[i].id == id) {
-                    return _data[i];
-                }
-            }
-            return null;
-        }
-    
-        function Fish(name, clas, sjfb, dlfb, qxhj, xttz, picture) {
-            this.id = new Date().getTime();
-            this.name = name ? name : null;
-            this.clas = clas ? clas : 0;
-            this.sjfb = sjfb ? sjfb : '0';
-            this.dlfb = dlfb ? dlfb : 0;
-            this.qxhj = qxhj ? qxhj : 0;
-            this.xttz = xttz ? xttz : 0;
-            this.picture = picture ? picture : 0;
-        }
-        //定义鱼类对象
-        
-        function addHandler() {
-            var yu = new Fish();
-            yu.name = $('nName').value.trim();
-            yu.clas = $('nClas').value.trim();
-            yu.sjfb = $('nSjfb').value.trim();
-            yu.dlfb = $('nDlfb').value.trim();
-            yu.qxhj = $('nQxhj').value.trim();
-            yu.xttz = $('nXttz').value.trim();
-            yu.picture = $('nPicture').value.trim();
-            if (valid(yu)) {
-                _data.push(yu);
-                $('resetButton').click();
-            }
-            showData(_data);
-        }
-        //鱼类信息的增加方法
-        
+        //验证输入是否正确
         function valid(fish) {
             if (fish.name == '') {
                 alert('名字不能为空！');
                 return false;
             }
-            if (fish.clas == '') {
+            if (fish.class == '') {
                 alert('科目不能为空！');
                 return false;
             }
             
             return true;
         }
-        //验证输入是否正确
-        
+
+        //鱼类信息的删除方法
         function delHandler(id) {
             if (confirm('真的要删除吗？')) {
-                var temp = [];
-                for (var i = 0; i < _data.length; i++) {
-                    if (_data[i].id != id) {
-                        temp.push(_data[i]);
+                $.ajax({
+                    url: "{:url('index/admin/del')}" + '?t=' + Math.random(),
+                    type: 'post',
+                    dataType: 'json',
+                    data: {id: id},
+                    success: function (res) {
+                        if (res.status == 1) {
+                            alert(res.msg);
+                            cancel();
+                        } else {
+                            alert(res.msg);
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        alert('网络失败，请刷新页面后重试');
                     }
-                }
-                _data = temp;
-                showData(_data);
+                })
             }
         }
-        //鱼类信息的删除方法
-        
-        function search(name, clas) {
-            var temp = [];
-            for (var i = 0; i < _data.length; i++) {
-                if ("" != name) {
-                    if (_data[i].name != name) {
-                        continue;
-                    }
-                }
-                if ("" != clas) {
-                    if (_data[i].clas != clas) {
-                        continue;
-                    }
-                }
-              
-                temp.push(_data[i]);
-            }
-            showData(temp);
-        }
-        //查询方法
-        
-        function showData(data) {
-            info_body = info_body || $('info-body');
-            var html = [];
-            for (var i = 0; i < data.length; i++) {
-                html.push('<tr>');
-                html.push('<td>' + data[i].name + '</td>');
-                html.push('<td>' + data[i].clas + '</td>');
-                html.push('<td>' + data[i].sjfb + '</td>');
-                html.push('<td>' + data[i].dlfb + '</td>');
-                html.push('<td>' + data[i].qxhj + '</td>');
-                html.push('<td>' + data[i].xttz + '</td>');
-                html.push('<td>' + data[i].picture + '</td>');
-                html.push('<td><button class="btn" style="margin-right:10px;" onclick="editHandler(this,\'' + data[i].id + '\')">编辑</button><button class="btn btn-danger" style="margin-right:10px;" onclick="delHandler(\'' + data[i].id + '\')">删除</button></td>');
-                html.push('</tr>');
-            }
-            info_body.innerHTML = html.join("");
-        }
-        //用html显示数据内容
-        
-        function saveEidted(id) {
-            var yu = new Fish();
-            yu.name = $('eName').value;
-            yu.clas = $('eClas').value;
-            yu.sjfb = $('eSjfb').value;
-            yu.dlfb = $('eDlfb').value;
-            yu.qxhj = $('eQxhj').value;
-            yu.xttz = $('eXttz').value;
-            yu.picture = $('ePicture').value;
-            if (valid(yu)) {
-                for (var i = 0; i < _data.length; i++) {
-                    if (_data[i].id == id) {
-                        _data[i] = yu;
-                        showData(_data);
-                        break;
-                    }
-                }
-            }
-        }
+
         //保存修改内容
-        
-        function editHandler(obj, id) {
-            var pp = obj.parentNode.parentNode;
-            var tds = pp.getElementsByTagName('td');
-            var temp = getFishById(id);
-            if (null != temp) {
+        function save(id) {
+            var yu = new Object();
+            yu.id = id;
+            yu.name = $('#eName').val().trim();
+            yu.class = $('#eClas').val().trim();
+            yu.shijiefenbu = $('#eSjfb').val().trim();
+            yu.dilifenbu = $('#eDlfb').val().trim();
+            yu.qixihuanjing = $('#eQxhj').val().trim();
+            yu.xingtaitezheng = $('#eXttz').val().trim();
+            yu.picture = $('#ePicture').val().trim();
+            if (valid(yu)) {
+                $.ajax({
+                    url: "{:url('index/admin/edit')}" + '?t=' + Math.random(),
+                    type: 'post',
+                    dataType: 'json',
+                    data: {fish: JSON.stringify(yu)},
+                    success: function (res) {
+                        if (res.status == 1) {
+                            alert(res.msg);
+                            cancel();
+                        } else {
+                            alert(res.msg);
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        alert('网络失败，请刷新页面后重试');
+                    }
+                })
+            }
+        }
+
+        //取消编辑
+        function cancel() {
+            top.location.href = "{:url('admin/index')}";
+        }
+
+        //编辑数据
+        function editHandler(id) {
+            var fish = new Array();
+            var tds = $("#" + id + " td");
+            tds.each(function () {
+                fish.push($(this).text());
+            });
+            if (null != fish) {
                 for (var i = 0; i < tds.length; i++) {
                     if (0 == i) {
-                        tds[i].innerHTML = '<input id="eName" style="width:80px" type="text" value="' + temp.name + '">';
+                        tds[i].innerHTML = '<input  class="form-control" id="eName" style="width:120px" type="text" value="' + fish[0] + '" />';
                     }
                     if (1 == i) {
-                        tds[i].innerHTML = '<input id="eClas" style="width:80px" type="text" value="' + temp.clas + '">';
+                        tds[i].innerHTML = '<input class="form-control" id="eClas" style="width:120px" type="text" value="' + fish[1] + '" />';
                     }
                     if (2 == i) {
-                        tds[i].innerHTML = '<input id="eSjfb" type="text" style="width:70px" value="' + temp.sjfb + '">';
+                        tds[i].innerHTML = '<input class="form-control" id="eSjfb" type="text" style="width:120px" value="' + fish[2] + '" />';
                     }
                     if (3 == i) {
-                        tds[i].innerHTML = '<input id="eDlfb" type="text" style="width:70px"  value="' + temp.dlfb + '">';
+                        tds[i].innerHTML = '<input class="form-control" id="eDlfb" type="text" style="width:120px"  value="' + fish[3] + '" />';
                     }
                     if (4 == i) {
-                        tds[i].innerHTML = '<input id="eQxhj" type="text" style="width:70px"  value="' + temp.qxhj + '">';
+                        tds[i].innerHTML = '<input class="form-control" id="eQxhj" type="text" style="width:120px"  value="' + fish[4] + '" />';
                     }
                     if (5 == i) {
-                        tds[i].innerHTML = '<input id="eXttz" type="text" style="width:70px"  value="' + temp.xttz + '">';
+                        tds[i].innerHTML = '<input class="form-control" id="eXttz" type="text" style="width:120px"  value="' + fish[5] + '" />';
                     }
                     if (6 == i) {
-                        tds[i].innerHTML = '<input id="ePicture" type="text" style="width:70px"  value="' + temp.picture + '">';
+                        tds[i].innerHTML = '<input class="form-control" id="ePicture" type="text" style="width:120px"  value="' + fish[6] + '" />';
                     }
                     if (7 == i) {
-                        tds[i].innerHTML = '<button class="btn" onclick="saveEidted(\'' + id + '\')">保存</button> <button class="btn" onclick="showData(_data)">取消</button>';
+                        tds[i].innerHTML = '<button class="btn btn-info" onclick="save(' + id + ')">保存</button> <button class="btn btn-primary" onclick="cancel(' + id + ')">取消</button>';
                     }
                 }
             } else {
                 alert('error!');
             }
         }
-        //编辑数据
+
     </script>
     <style type="text/css">
         * {
@@ -189,79 +162,63 @@
             padding-left: 20px;
             text-align: right;
         }
-
-        .sinput {
-            width: 100px;
-            border: 1px #eee solid;
-            margin-top: 0px;
-        }
-
-        .sslect {
-            width: 60px;
-            margin-top: 10px;
-        }
-
-        .ninput {
-            position: relative;
-            float: left;
-            left: -5px;
-            width: 100%;
-            border: 1px solid #eee;
-            margin: 0;
-        }
     </style>
+    <link rel="stylesheet" href="__STATIC__/css/bootstrap.min.css">
 </head>
 <body>
-    <div style="position:fixed;width:100%;background:#eee;z-index:9998;height:50px;overflow:hidden;">
-        <table>
+<div style="width:100%;background:#eee;margin-top: -20px">
+    <form action="{:url('admin/search')}" method="post">
+        <table class="">
             <tr>
-                <td class="stitle">中文名:</td>
-                <td><input type="text" class="sinput" id="sName" /></td>
-                <td class="stitle" style="width:50px;">科目:</td>
-                <td><input type="text" class="sinput" id="sClas" /></td>
-               
-                
-                <td>&nbsp;<input type="button" class="btn" value="查询" onclick="search($('sName').value.trim(),$('sClas').value.trim())" /></td>
+                <td width="8%" class="stitle">中文名:</td>
+                <td width="10%"><input type="text" class="form-control" name="sName"/></td>
+                <td width="8%" class="stitle">科目:</td>
+                <td width="10%"><input type="text" class="form-control" name="sClas"/></td>
+                <td width="10%">&nbsp;<input type="submit" class="btn btn-primary" value="查询"/></td>
+                <td width="12%"><a class="btn btn-primary" href="{:url('index/index/index')}">主页</a></td>
+                <td width="10%">{eq name="$uid" value="admin"}<a class="btn btn-primary" href="{:url('Admin/admin')}">
+                    管理员设置</a>{/eq}
+                </td>
+                <td width="7%"></td>
+                <td width="16%"><span style="font-size: 23px;">当前用户：{$uid}</span></td>
+                <td width="9%"><a class="btn btn-primary" href="{:url('Admin/shutDown')}">退出登录</a></td>
             </tr>
         </table>
-
-        <form>
-            <table class="table" id="add-info">
+    </form>
+    <div>
+        <table class="table table-striped table-hover" id="add-info">
                 <tr>
-                    <td width="100"><input class="ninput" type="text" id="nName" /></td>
-                    <td width="100"><input class="ninput" type="text" id="nClas" /></td>
-                    <td width="100"><input class="ninput" type="text" id="nSjfb" /></td>
-                    <td width="100"><input class="ninput" type="text" id="nDlfb" /></td>
-                    <td width="100"><input class="ninput" type="text" id="nQxhj" /></td>
-                    <td width="100"><input class="ninput" type="text" id="nXttz" /></td>
-                    <td width="100"><input class="ninput" type="text" id="nPicture" /></td>
+                    <td width="150"><input class="form-control" type="text" name="nName" id="nName"/></td>
+                    <td width="150"><input class="form-control" type="text" name="nClas" id="nClas"/></td>
+                    <td width="150"><input class="form-control" type="text" name="nSjfb" id="nSjfb"/></td>
+                    <td width="150"><input class="form-control" type="text" name="nDlfb" id="nDlfb"/></td>
+                    <td width="150"><input class="form-control" type="text" name="nQxhj" id="nQxhj"/></td>
+                    <td width="150"><input class="form-control" type="text" name="nXttz" id="nXttz"/></td>
+                    <td width="150"><input class="form-control" type="text" name="nPicture" id="nPicture"/></td>
                     <td>
-                        <input type="button" class="btn" value="添加" onclick="addHandler()" />
-                        <input type="reset" value="reset" id="resetButton" style="display:none;" />
+                        <input type="button" class="btn btn-primary" value="添加" onclick="addHandler()"/>
                     </td>
                 </tr>
             </table>
-        </form>
     </div>
-    <div style="position:absolute;z-index:9999;top:10px;bottom:0;height:auto;width:auto;right:30px;overflow:auto;"><a href="{:url('Admin/shutDown')}"><button> 退出登录</button></a></div>
-    <tr style="position:absolute;top:60px;bottom:0;height:auto;width:auto;left:0;right:0;overflow:auto;">
-        <table class="table table-bordered  table-hover" style="position:absolute;top:0px;z-index:2;" id="info-list">
+    </div>
+<div style="height:auto;width:auto;">
+    <table class="table table-striped  table-hover" id="info-list">
             <thead>
                 <tr>
-                    <td width="100">中文名</td>
-                    <td width="100">科目</td>
-                    <td width="100">世界分布</td>
-                    <td width="100">地理分布</td>
-                    <td width="100">栖息环境</td>
-                    <td width="100">形态特征</td>
-                    <td width="100">图片地址</td>
+                    <td width="150">中文名</td>
+                    <td width="150">科目</td>
+                    <td width="150">世界分布</td>
+                    <td width="150">地理分布</td>
+                    <td width="150">栖息环境</td>
+                    <td width="150">形态特征</td>
+                    <td width="150">图片地址</td>
                     <td>操作</td>
                 </tr>
             </thead>
             <tbody id="info-body">
             {volist name="list" id="fish" }
-            <tr>
-                <td style="display: none">{$fish.id}</td>
+            <tr id="{$fish.id}">
                 <td>{$fish.name}</td>
                 <td>{$fish.class}</td>
                 <td>{$fish.shijiefenbu}</td>
@@ -269,10 +226,18 @@
                 <td>{$fish.qixihuanjing}</td>
                 <td>{$fish.xingtaitezheng}</td>
                 <td>{$fish.picture}</td>
+                <td>
+                    <button class="btn btn-primary" style="margin-right:10px;" onclick="editHandler('{$fish.id}');">编辑
+                    </button>
+                    <button class="btn btn-danger" style="margin-right:10px;" onclick="delHandler('{$fish.id}');">删除
+                    </button>
+                </td>
             </tr>
             {/volist}
             </tbody>
         </table>
     </div>
+</div>
+<div style="position: fixed;bottom: 20px;right: 22%; font-size: 28px">{$page}</div>
 </body>
 </html>

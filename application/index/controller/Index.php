@@ -12,41 +12,59 @@ class Index extends Base
     //登录页面
     public function login()
     {
-        $uid = session('admin-id');
-        if(session('?admin-id')&&$uid != null){
+        $uid = session('name');
+        if (session('?name') && $uid != null) {
             $this->redirect('Admin/index','已登陆');
         }
-        if($this->request->isPost()){
-            $param = $this->request->param();//获取提交过来的用户名和密码
-
-            $admin = db('admin')->where('admin-id', $param['username'])->find();//查询该管理员id在数据库中的记录
-            if($admin){
-                if($admin['password']==$param['password']){
-                    session('user',$admin);
-                    session('admin-id',$admin['admin-id']);
-                    $url = url("index/admin/index");
-                    exit(json_encode(array('status'=>1,'url'=>$url)));
-                }
-                exit(json_encode(array('status'=>0,'msg'=>'密码错误')));
-            }else{
-                exit(json_encode(array('status'=>0,'msg'=>'该用户不存在')));
-            }
-
-        }else{
             return $this->fetch();
-        }
+    }
 
-   }
     public function introduce()
     {
         return $this->fetch();
     }
+
+    //图片查询
     public function picture()
     {
+        if ($this->request->param('id')) {
+            $fish = db('fish')->where('id', $this->request->param('id'))->find();
+            $this->assign('fish', $fish);
+            return $this->fetch('information');
+        }
+        $fish = db('fish')->paginate(9);
+        $page = $fish->render();
+        $this->assign('page', $page);
+        $this->assign('list', $fish);
         return $this->fetch();
     }
+
+    //获取所有鱼的种类
     public function classification()
     {
+        $fishs = db('fish')->field('class')->select();
+        $class = array();
+        foreach ($fishs as $fish) {
+            array_push($class, $fish['class']);
+        }
+        //去除数组里相同种类的信息
+        $class = array_unique($class);
+        $this->assign('list', $class);
+        return $this->fetch();
+    }
+
+    //获取种类下面所有的鱼的名称
+    public function fishclass()
+    {
+        $name = db('fish')->where('class', $this->request->param('class'))->field('name')->select();
+        return json($name);
+    }
+
+    //获取鱼类信息
+    public function information()
+    {
+        $fish = db('fish')->where('name', $this->request->param('name'))->find();
+        $this->assign('fish', $fish);
         return $this->fetch();
     }
 
